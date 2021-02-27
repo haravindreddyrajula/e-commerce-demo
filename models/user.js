@@ -29,7 +29,6 @@ var userSchema = new mongoose.Schema({
         trim: true
     },
 
-    //TODO 
     encry_password: {
         type : String,
         required: true
@@ -40,15 +39,18 @@ var userSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
+
     purchases:{
         type: Array,
         default:[]
     }
-},
-{timestamps: true}
+    },
+
+    {timestamps: true}
+
 );
 
-  userSchema.virtual('password')
+userSchema.virtual('password')
     .set(function(password){
         this._password = password  //using "_" makes private variable
         this.salt = uuidv1();
@@ -58,23 +60,23 @@ var userSchema = new mongoose.Schema({
         return this._password
     })
 
-  userSchema.method = {
+userSchema.methods = {
     
     authenticate: function(plainpassword){
         return this.securePassword(plainpassword) === this.encry_password
     },
 
     securePassword: function(plainpassword){
-          if(!plainpassword) return "";
-          try{
-              return crypto.createHmac('sha256', this.salt)
-              .update(plainpassword)
-              .digest('hex')
+        if(!plainpassword) return "";
+            try{
+                return crypto.createHmac('sha256', this.salt)
+                             .update(plainpassword)
+                             .digest('hex')
 
-          } catch(err){
+            } catch(err){
               return "";
-          }
-      }
-  }
+        }
+    }
+}
 
-  module.exports = mongoose.model("User", userSchema)
+module.exports = mongoose.model("User", userSchema)
