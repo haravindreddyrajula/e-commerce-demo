@@ -83,3 +83,41 @@ exports.userPurchaseList = (req, res) => {
              return res.json(order)
          })
 }
+
+exports.pushOrderInPurchaseList = (req, res, next) => {
+    
+    let tempPurchases = []
+    //all the info will get from frontend req
+    req.body.order.products.forEach(product => {
+        tempPurchases.push({
+            _id: product._id,
+            name: product.name,
+            description: product.description,
+            category: product.category,
+            quantity: product.quantity,
+            amount: req.body.order.amount,                  //this two fields will get with req outof model
+            transaction_id: req.body.order.transaction_id
+        })
+    });
+
+    //Storing in DB.
+    User.findOneAndUpdate(
+        //finding the user
+        {_id: User.profile._id}, 
+
+        //updating and using push instead set because push is used for array
+        {$push: {purchases: tempPurchases}},
+        
+        //By "new" we are requesting to send the updated userdetails
+        {new: true},
+
+        (err, purchase) => {
+            if(err){
+                return res.status(400).json({
+                    error: "Unable to save purchase list"
+                })
+            }
+            next()
+        }
+    )
+}
