@@ -8,15 +8,17 @@ const {check, validationResult} = require("express-validator") //data validation
 
 exports.signup = (req, res) => {
 
-    // TESTING CODE IS COMMENTED BELOW
-    // console.log("signup done")
-    // console.log("REQ BODY", req.body)
-    // res.json({
-    //    message: "signup done u fool"
-    // })
+/*
+    TESTING CODE IS COMMENTED BELOW
+    console.log("signup done")
+    console.log("REQ BODY", req.body)
+    res.json({
+       message: "signup done u fool"
+    })
+*/
 
     const errors = validationResult(req)
-
+    
     if(!errors.isEmpty()){
         return res.status(422)
                   .json({ error: errors.array()[0].msg }) 
@@ -69,7 +71,6 @@ exports.signin = (req, res) => {
         //sending response to front end 
         const {_id, name, email, role} = user
         return res.json({token, user: {_id, name, email, role}})
-
     })
 }
 
@@ -89,14 +90,11 @@ exports.isSignedIn = expressJwt({
 //custom middlewares
 exports.isAuthenticated = (req, res, next) => {
     let checker = req.profile && req.auth && req.profile._id == req.auth._id
-
     if(!checker){
         return res.status(403).json({
             error: "ACCESS DENIED"
         })
-
     }
-
     next()
 }
 
@@ -106,6 +104,5 @@ exports.isAdmin = (req, res, next) => {
             error: "You are not ADMIN"
         })
     }
-
     next()
 }
